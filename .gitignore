@@ -1,0 +1,34 @@
+# Build directories
+build/
+build_*/
+bin/
+lib/
+
+# CMake temporary files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+Testing/
+
+# Compiler and IDE artifacts
+*.o
+*.a
+*.so
+*.dylib
+*.dSYM/
+.DS_Store
+.idea/
+.vscode/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+
+# Test and benchmark data artifacts
+*.csv.tmp
+*.log
