@@ -19,7 +19,7 @@ public:
         bytes_allocated_.fetch_add(bytes, std::memory_order_relaxed);
     }
 
-    static void record_dealloc(size_t bytes) noexcept {
+    static void record_dealloc([[maybe_unused]] size_t bytes = 0) noexcept {
         dealloc_count_.fetch_add(1, std::memory_order_relaxed);
     }
 

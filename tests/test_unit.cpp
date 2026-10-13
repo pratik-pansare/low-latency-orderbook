@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "book/ordered_map_book.hpp"
 #include "book/optimized_book.hpp"
+#include "market_data/spsc_ring_buffer.hpp"
 
 namespace atlas::testing {
 
@@ -320,6 +321,38 @@ TYPED_TEST(OrderBookTypedTest, MarketDepthAggregation) {
     EXPECT_EQ(depth.asks[1].price, 103);
     EXPECT_EQ(depth.asks[1].total_qty, 45);
     EXPECT_EQ(depth.asks[1].order_count, 2);
+}
+
+// 12. SPSC Ring Buffer verification
+TEST(SpscRingBufferTest, BasicPushPopAndWraparound) {
+    atlas::market_data::SpscRingBuffer<uint64_t, 8> ring;
+    EXPECT_TRUE(ring.empty());
+    EXPECT_EQ(ring.size(), 0);
+
+    // Push up to capacity
+    for (uint64_t i = 1; i <= 8; ++i) {
+        EXPECT_TRUE(ring.try_push(i));
+    }
+    EXPECT_TRUE(ring.full());
+    EXPECT_FALSE(ring.try_push(999)); // Overflow rejected
+
+    // Pop elements
+    for (uint64_t i = 1; i <= 8; ++i) {
+        uint64_t val = 0;
+        EXPECT_TRUE(ring.try_pop(val));
+        EXPECT_EQ(val, i);
+    }
+    EXPECT_TRUE(ring.empty());
+    uint64_t dummy = 0;
+    EXPECT_FALSE(ring.try_pop(dummy)); // Underflow rejected
+
+    // Test wraparound
+    for (uint64_t round = 0; round < 100; ++round) {
+        EXPECT_TRUE(ring.try_push(round));
+        uint64_t out = 0;
+        EXPECT_TRUE(ring.try_pop(out));
+        EXPECT_EQ(out, round);
+    }
 }
 
 } // namespace atlas::testing
